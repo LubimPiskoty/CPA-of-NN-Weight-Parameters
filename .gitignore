@@ -1,0 +1,50 @@
+# --- Python / Jupyter ---
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+*.egg-info/
+
+# --- Jupyter output stripping (use nbstripout instead where possible) ---
+*.ipynb_checkpoints
+
+# --- ChipWhisperer / trace data (keep raw data out of git history) ---
+data/raw/**/*.trs
+data/raw/**/*.npy
+data/raw/**/*.npz
+data/processed/**/*.npy
+data/processed/**/*.npz
+!data/raw/**/.gitkeep
+!data/processed/**/.gitkeep
+
+# --- Firmware build artifacts ---
+firmware/**/*.hex
+firmware/**/*.elf
+firmware/**/*.bin
+firmware/**/build/
+firmware/**/*.o
+firmware/**/*.map
+
+# --- LaTeX build junk ---
+thesis/build/
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.lof
+*.lot
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+
+# --- scratch / tmp (do NOT commit ad-hoc test files) ---
+tmp/
+scratch/
+*.tmp
