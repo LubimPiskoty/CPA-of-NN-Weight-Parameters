@@ -48,3 +48,8 @@ Thumbs.db
 tmp/
 scratch/
 *.tmp
+
+compile_commands.json
+*/.cache
+Makefile.platform
+*/objdir-*
