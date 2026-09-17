@@ -59,13 +59,18 @@ neuron create_neuron(void *weights, int num_in_weights, int layer_idx,
   new_neuron.z = 0.0;
   new_neuron.bias = 0.0;
   new_neuron.num_weights = num_in_weights;
-  new_neuron.weights = num_in_weights > 0
-                           ? (float *)malloc(num_in_weights * sizeof(float))
-                           : NULL;
 
-  if (weights != NULL) {
+  if (num_in_weights > 0) {
+    new_neuron.weights = (float *)malloc(num_in_weights * sizeof(float));
+  } else {
+    new_neuron.weights = NULL;
+  }
+  if (weights != NULL && num_in_weights > 0) {
+    // TODO: Dont question it... it works.
+    float (*layer_weights)[num_in_weights] =
+        ((float (*)[num_in_weights])((float **)weights)[layer_idx]);
     for (int i = 0; i < num_in_weights; i++) {
-      new_neuron.weights[i] = ((float **)weights)[neuron_idx][i];
+      new_neuron.weights[i] = layer_weights[neuron_idx][i];
     }
   }
   return new_neuron;
@@ -157,5 +162,6 @@ network forward(network net) {
       }
     }
   }
+
   return net;
 }

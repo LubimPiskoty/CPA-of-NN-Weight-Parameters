@@ -54,4 +54,7 @@ int main(void) {
 
   // Insert your handlers here.
   simpleserial_addcmd('p', 16, handle);
+
+  while (1)
+    simpleserial_get();
 }

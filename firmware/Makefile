@@ -30,7 +30,7 @@
 
 # Target file name (without extension).
 # This is the name of the compiled .hex file.
-TARGET = cpa_firmware
+TARGET = cpa-firmware
 
 # List C source files here.
 # Header files (.h) are automatically pulled in.
@@ -43,6 +43,7 @@ SRC += network.c
 # CRYPTO_OPTIONS = AES128C
 # endif
 CRYPTO_TARGET = NONE
+# OPT = 2
 
 # Change this into your installation path
 FIRMWAREPATH = $(HOME)/chipwhisperer/firmware/mcu
