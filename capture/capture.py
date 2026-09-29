@@ -21,6 +21,7 @@ import numpy as np
 import chipwhisperer as cw
 from configs import cw_config as cfg
 from tqdm import trange
+import math
 
 PROGRAMMER_MAP = {
     "stm32f": cw.programmers.STM32FProgrammer,
@@ -33,10 +34,11 @@ DECIMATE = 1  # increase to stretch the capture window further in time
 N_WARMUP = 50  # dummy captures to let the target/scope settle before real capture
 
 
-def make_payload(input_value: float) -> bytearray:
-    """Pack a float into the first 4 bytes of a 16-byte SimpleSerial payload."""
+def make_payload(input_value: float, weight_value: float) -> bytearray:
+    """Pack a float into a 16-byte SimpleSerial payload."""
     payload = bytearray(16)
     payload[0:4] = struct.pack("<f", input_value)
+    payload[4:8] = struct.pack("<f", weight_value)
     return payload
 
 
@@ -79,7 +81,7 @@ def main():
             exit(-1)
         print(f"Flashing firmware: {cfg.FW_PATH}")
         cw.program_target(scope, PROGRAMMER_MAP[cfg.PROGRAMMER], cfg.FW_PATH)
-        time.sleep(0.5)
+        time.sleep(0.2)
     else:
         print("Skipping flash (SKIP_FLASH=True in cw_config.py)")
 
@@ -88,32 +90,42 @@ def main():
         float(rng.uniform(cfg.INPUT_LOW, cfg.INPUT_HIGH)) for _ in range(cfg.NUM_TRACES)
     ]
 
+    weight_vals = []
+    for _ in range(math.ceil(cfg.NUM_TRACES / cfg.TRACES_PER_WEIGHT)):
+        w = float(rng.uniform(cfg.WEIGHT_LOW, cfg.WEIGHT_HIGH))
+        weight_vals.extend([w] * cfg.TRACES_PER_WEIGHT)
+    weight_vals = weight_vals[: cfg.NUM_TRACES]
     proj = cw.create_project(cfg.PROJECT_NAME, overwrite=True)
 
     print(f"Warming up ({N_WARMUP} dummy captures)...")
-    dummy_payload = make_payload(0.0)
+    dummy_payload = make_payload(-0.67, 0.67)
     for _ in range(N_WARMUP):
         capture_trace(scope, target, dummy_payload)
     print("Warm up done.")
 
+    # proj.config["Ground Truth"] = {}
+    # proj.config["Ground Truth"]["Weight[0][0]"] = w
+
     print(f"Capturing {cfg.NUM_TRACES:,} traces...")
     start = time.time()
     try:
-        for i in trange(cfg.NUM_TRACES):
-            cmd_data = make_payload(input_vals[i])
+        for i in trange(cfg.NUM_TRACES, mininterval=10):
+            cmd_data = make_payload(input_vals[i], weight_vals[i])
             trace_wave, _ = capture_trace(scope, target, cmd_data)
 
             trace = cw.Trace(
-                wave=trace_wave, textin=input_vals[i], textout=None, key=None
+                wave=trace_wave,
+                textin=(input_vals[i], weight_vals[i]),
+                textout=None,
+                key=None,
             )
             proj.traces.append(trace)
 
-            if (i + 1) % 1000 == 0 or (i + 1) == cfg.NUM_TRACES:
-                elapsed = time.time() - start
-                print(f"  completed {i + 1:,}/{cfg.NUM_TRACES:,} in {elapsed:.1f}s")
     except KeyboardInterrupt:
         print("\nInterrupted — saving what was captured so far.")
     finally:
+        elapsed = time.time() - start
+        print(f"  completed in {elapsed:.1f}s")
         scope.dis()
         target.dis()
 

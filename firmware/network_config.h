@@ -45,3 +45,25 @@ void init_weights() {
   net_config_layer_weights[2] = (void *)net_config_weights.lay2_weights;
   net_config_layer_weights[3] = (void *)net_config_weights.lay3_weights;
 }
+
+void init_empty_weights() {
+  for (int i = 0; i < 5; i++) {
+    for (int j = 0; j < 7; j++) {
+      net_config_weights.lay1_weights[i][j] = 0.f;
+    }
+  }
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 5; j++) {
+      net_config_weights.lay2_weights[i][j] = 0.f;
+    }
+  }
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+      net_config_weights.lay3_weights[i][j] = 0.f;
+    }
+  }
+  net_config_layer_weights[0] = (void *)net_config_weights.lay0_weights;
+  net_config_layer_weights[1] = (void *)net_config_weights.lay1_weights;
+  net_config_layer_weights[2] = (void *)net_config_weights.lay2_weights;
+  net_config_layer_weights[3] = (void *)net_config_weights.lay3_weights;
+}

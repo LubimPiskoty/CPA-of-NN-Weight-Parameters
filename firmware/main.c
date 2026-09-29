@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -23,7 +24,13 @@ uint8_t handle(uint8_t *buf, uint8_t len) {
   float input_value;
   uint8_t input_buffer[4] = {buf[0], buf[1], buf[2], buf[3]};
   memcpy(&input_value, input_buffer, sizeof(float));
+
+  // Convert the value of first weight
+  float weight_value;
+  memcpy(&weight_value, &buf[sizeof(float)], sizeof(float));
+
   net.layers[0].neurons[0].a = input_value;
+  net.layers[1].neurons[0].weights[0] = weight_value;
 
   // Start Measurement
   trigger_high();

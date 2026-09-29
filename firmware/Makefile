@@ -30,7 +30,7 @@
 
 # Target file name (without extension).
 # This is the name of the compiled .hex file.
-TARGET = cpa-firmware
+TARGET = firmware
 
 # List C source files here.
 # Header files (.h) are automatically pulled in.
