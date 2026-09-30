@@ -53,3 +53,11 @@ compile_commands.json
 */.cache
 Makefile.platform
 */objdir-*
+
+data/raw/*
+*.eep
+*.lss
+*.sym
+firmware/objdir*
+*/.jupyter
+.jupyter

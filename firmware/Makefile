@@ -44,6 +44,13 @@ SRC += network.c
 # endif
 CRYPTO_TARGET = NONE
 # OPT = 2
+# 1 = attack build (fixed ground-truth weights, only the input is taken from
+# the payload), 0 = profiling build (input and first weight from the payload).
+# Override on the command line: make IS_ATTACK_MODE=1
+IS_ATTACK_MODE ?= 0
+ifeq ($(IS_ATTACK_MODE),1)
+CDEFS += -DIS_ATTACK_MODE
+endif
 
 # Change this into your installation path
 FIRMWAREPATH = $(HOME)/chipwhisperer/firmware/mcu

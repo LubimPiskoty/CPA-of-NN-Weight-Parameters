@@ -36,7 +36,7 @@ void init_weights() {
     }
   }
   for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
+    for (int j = 0; j < 4; j++) {
       net_config_weights.lay3_weights[i][j] = lay3_weights[i][j];
     }
   }
@@ -58,7 +58,7 @@ void init_empty_weights() {
     }
   }
   for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
+    for (int j = 0; j < 4; j++) {
       net_config_weights.lay3_weights[i][j] = 0.f;
     }
   }
