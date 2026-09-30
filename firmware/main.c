@@ -14,10 +14,20 @@
 // volatile keeps the compiler from dropping the unused branch, which would
 // change the code layout between the profiling and attack builds.
 #ifdef IS_ATTACK_MODE
-static volatile const uint8_t use_payload_weight = 0;
+static volatile const uint8_t is_profiling = 0;
 #else
-static volatile const uint8_t use_payload_weight = 1;
+static volatile const uint8_t is_profiling = 1;
 #endif /* ifdef IS_ATTACK_MODE */
+
+// Range of the random weights used while profiling (same as WEIGHT_LOW/HIGH in
+// capture/configs/cw_config.py)
+#define RANDOM_WEIGHT_MAX 2.0f
+
+/// Uniform random float in [-RANDOM_WEIGHT_MAX, RANDOM_WEIGHT_MAX].
+static float random_weight(void) {
+  return ((float)rand() / (float)RAND_MAX) * (2.0f * RANDOM_WEIGHT_MAX) -
+         RANDOM_WEIGHT_MAX;
+}
 
 /// This function will handle the 'p' command send from the capture board.
 uint8_t handle(uint8_t *buf, uint8_t len) {
@@ -36,16 +46,27 @@ uint8_t handle(uint8_t *buf, uint8_t len) {
 
   net.layers[0].neurons[0].a = input_value;
 
-  // Profiling: the first weight comes from the payload. Attack: it stays the
-  // fixed weight from network_config.h and the payload weight is ignored.
+  // Profiling: every weight of the network is random, and the attacked (first)
+  // weight comes from the payload so it is known. Attack: all weights stay the
+  // fixed ones from network_config.h and the payload weight is ignored.
   // Both builds run the same instructions (only the flag's value differs), so
   // the code layout and timing of the two builds are identical.
+  for (int l = 1; l < num_layers; l++) {
+    for (int n = 0; n < net.layers[l].num_neurons; n++) {
+      for (int w = 0; w < net.layers[l].neurons[n].num_weights; w++) {
+        float r = random_weight();
+        float fixed = net.layers[l].neurons[n].weights[w];
+        net.layers[l].neurons[n].weights[w] = is_profiling ? r : fixed;
+      }
+    }
+  }
+
   float weight_value;
   memcpy(&weight_value, &buf[sizeof(float)], sizeof(float));
 
   float fixed_weight = net.layers[1].neurons[0].weights[0];
   net.layers[1].neurons[0].weights[0] =
-      use_payload_weight ? weight_value : fixed_weight;
+      is_profiling ? weight_value : fixed_weight;
 
   // Start Measurement
   trigger_high();

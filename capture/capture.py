@@ -26,7 +26,6 @@ import numpy as np
 import chipwhisperer as cw
 from configs import cw_config as cfg
 from tqdm import trange
-import math
 
 PROGRAMMER_MAP = {
     "stm32f": cw.programmers.STM32FProgrammer,
@@ -145,16 +144,15 @@ def capture_phase(
 def main():
     rng = np.random.default_rng(seed=cfg.SEED)
 
-    # Profiling: random known weights, each held for TRACES_PER_WEIGHT traces
+    # Profiling: a random known weight for every trace
     prof_inputs = [
         float(rng.uniform(cfg.INPUT_LOW, cfg.INPUT_HIGH))
         for _ in range(cfg.NUM_PROFILING_TRACES)
     ]
-    prof_weights = []
-    for _ in range(math.ceil(cfg.NUM_PROFILING_TRACES / cfg.TRACES_PER_WEIGHT)):
-        w = float(rng.uniform(cfg.WEIGHT_LOW, cfg.WEIGHT_HIGH))
-        prof_weights.extend([w] * cfg.TRACES_PER_WEIGHT)
-    prof_weights = prof_weights[: cfg.NUM_PROFILING_TRACES]
+    prof_weights = [
+        float(rng.uniform(cfg.WEIGHT_LOW, cfg.WEIGHT_HIGH))
+        for _ in range(cfg.NUM_PROFILING_TRACES)
+    ]
 
     # Attack: only inputs, the weight is the fixed one compiled into the firmware.
     # The payload still carries dummy weights (ignored by the firmware).

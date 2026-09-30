@@ -24,11 +24,11 @@ NUM_ATTACK_TRACES = 5_000
 INPUT_LOW = -1.0
 INPUT_HIGH = 1.0
 
-# Random weight range for profiling (uniform distribution); should cover the
-# fixed firmware weights in network_config.h, which lie in [-2, 2]
+# Random weight range for profiling (uniform distribution, a new weight for
+# every trace); should cover the fixed firmware weights in network_config.h,
+# which lie in [-2, 2]
 WEIGHT_LOW = -2.0
 WEIGHT_HIGH = 2.0
-TRACES_PER_WEIGHT = 500
 
 # RNG seed for reproducibility
 SEED = 148
