@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #include "network.h"
 #include "network_config.h"
@@ -29,44 +28,59 @@ static float random_weight(void) {
          RANDOM_WEIGHT_MAX;
 }
 
+/// Handles the 'k' command: seeds the RNG with the 4-byte payload (uint32) and
+/// sets the weights used by every following 'p' command, so the host changes
+/// weights once per batch of traces instead of once per trace.
+/// Profiling: every weight is random from the seed. Attack: the same work is
+/// done but the fixed weights from network_config.h are kept.
+/// Replies with the attacked (first) weight so the host knows its value.
+uint8_t set_weights(uint8_t *buf, uint8_t len) {
+  uint32_t seed;
+  memcpy(&seed, buf, sizeof(uint32_t));
+  srand(seed);
+
+  for (int n = 0; n < 5; n++)
+    for (int w = 0; w < 7; w++) {
+      float r = random_weight();
+      net_config_weights.lay1_weights[n][w] =
+          is_profiling ? r : net_config_weights.lay1_weights[n][w];
+    }
+  for (int n = 0; n < 4; n++)
+    for (int w = 0; w < 5; w++) {
+      float r = random_weight();
+      net_config_weights.lay2_weights[n][w] =
+          is_profiling ? r : net_config_weights.lay2_weights[n][w];
+    }
+  for (int n = 0; n < 3; n++)
+    for (int w = 0; w < 4; w++) {
+      float r = random_weight();
+      net_config_weights.lay3_weights[n][w] =
+          is_profiling ? r : net_config_weights.lay3_weights[n][w];
+    }
+
+  uint8_t out[4];
+  memcpy(out, &net_config_weights.lay1_weights[0][0], sizeof(float));
+  simpleserial_put('r', sizeof(out), out);
+
+  return 0;
+}
+
 /// This function will handle the 'p' command send from the capture board.
+/// Only the input changes here; the weights are the ones set by 'k'.
 uint8_t handle(uint8_t *buf, uint8_t len) {
   int num_layers = NET_NUM_LAYERS;
   int *num_neurons_arr = NET_NUM_NEURONS;
 
-  // Initialize the network with the pre-defined structure
+  // Initialize the network with the current weights
   network net =
       init_network(num_layers, num_neurons_arr, net_config_layer_weights);
 
   // Change the input of the first neuron in the first layer to the provided
   // number convert to float from a 4-byte buffer
   float input_value;
-  uint8_t input_buffer[4] = {buf[0], buf[1], buf[2], buf[3]};
-  memcpy(&input_value, input_buffer, sizeof(float));
+  memcpy(&input_value, buf, sizeof(float));
 
   net.layers[0].neurons[0].a = input_value;
-
-  // Profiling: every weight of the network is random, and the attacked (first)
-  // weight comes from the payload so it is known. Attack: all weights stay the
-  // fixed ones from network_config.h and the payload weight is ignored.
-  // Both builds run the same instructions (only the flag's value differs), so
-  // the code layout and timing of the two builds are identical.
-  for (int l = 1; l < num_layers; l++) {
-    for (int n = 0; n < net.layers[l].num_neurons; n++) {
-      for (int w = 0; w < net.layers[l].neurons[n].num_weights; w++) {
-        float r = random_weight();
-        float fixed = net.layers[l].neurons[n].weights[w];
-        net.layers[l].neurons[n].weights[w] = is_profiling ? r : fixed;
-      }
-    }
-  }
-
-  float weight_value;
-  memcpy(&weight_value, &buf[sizeof(float)], sizeof(float));
-
-  float fixed_weight = net.layers[1].neurons[0].weights[0];
-  net.layers[1].neurons[0].weights[0] =
-      is_profiling ? weight_value : fixed_weight;
 
   // Start Measurement
   trigger_high();
@@ -83,9 +97,8 @@ uint8_t handle(uint8_t *buf, uint8_t len) {
 }
 
 int main(void) {
-  srand(time(NULL));
-  // Initialize network weights. Both modes use the same fixed weights so the
-  // traces match; profiling only overrides the first weight in handle().
+  // Initialize network weights to the fixed ones. Profiling replaces them
+  // with random ones through the 'k' command; the attack build keeps them.
   init_weights();
   // Setup the specific chipset.
   platform_init();
@@ -97,6 +110,7 @@ int main(void) {
   simpleserial_init();
 
   // Insert your handlers here.
+  simpleserial_addcmd('k', 4, set_weights);
   simpleserial_addcmd('p', 16, handle);
 
   while (1)
