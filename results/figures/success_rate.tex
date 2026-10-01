@@ -1,0 +1,19 @@
+\begin{tikzpicture}
+\begin{axis}[
+  xlabel={number of attack traces},
+  ylabel={success rate},
+  width=0.9\linewidth,
+  height=6cm,
+  grid=major,
+  grid style={gray!25},
+  legend pos=south east,
+  legend cell align=left,
+  xmode=log,
+  xmin=1,
+  xmax=500,
+  ymin=-0.02,
+  ymax=1.02,
+]
+\addplot[blue, semithick, mark=*, mark size=1.5pt, forget plot] coordinates {(1,0) (2,0) (3,0) (4,0) (6,0) (7,0) (9,0.01) (11,0.03) (13,0.06) (16,0.07) (20,0.21) (25,0.35) (31,0.44) (38,0.64) (47,0.73) (59,0.79) (73,0.88) (90,0.89) (112,0.92) (138,0.95) (171,0.99) (212,0.98) (263,1) (326,1) (404,1) (500,1)};
+\end{axis}
+\end{tikzpicture}
