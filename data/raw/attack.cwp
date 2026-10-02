@@ -1,0 +1,10 @@
+[Trace Management]
+tracefile0 = attack_data/traces/config_2026.10.01-15.32.03_0.cfg
+enabled0 = True
+[ChipWhisperer]
+[[General Settings]]
+Project Name = Untitled
+Project File Version = 1.00
+Project Author = Unknown
+Program Name = ChipWhisperer
+Program Version = ""

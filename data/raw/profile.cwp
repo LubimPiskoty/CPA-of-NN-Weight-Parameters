@@ -1,0 +1,18 @@
+[Trace Management]
+tracefile0 = profile_data/traces/config_2026.10.01-15.28.45_0.cfg
+enabled0 = True
+tracefile1 = profile_data/traces/config_2026.10.01-15.28.46_1.cfg
+enabled1 = True
+tracefile2 = profile_data/traces/config_2026.10.01-15.28.48_2.cfg
+enabled2 = True
+tracefile3 = profile_data/traces/config_2026.10.01-15.28.52_3.cfg
+enabled3 = True
+tracefile4 = profile_data/traces/config_2026.10.01-15.28.58_4.cfg
+enabled4 = True
+[ChipWhisperer]
+[[General Settings]]
+Project Name = Untitled
+Project File Version = 1.00
+Project Author = Unknown
+Program Name = ChipWhisperer
+Program Version = ""
