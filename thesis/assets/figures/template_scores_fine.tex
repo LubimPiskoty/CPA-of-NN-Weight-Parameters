@@ -1,0 +1,97 @@
+\documentclass{standalone}
+
+\usepackage{xcolor}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+
+\pgfplotsset{
+    compat=1.18
+}
+
+\def\datafile{template_scores_fine.txt}
+
+\pgfplotstableread[
+    col sep=tab
+]{\datafile}\datatable
+
+\begin{document}
+
+\begin{tikzpicture}
+
+\begin{axis}[
+    xlabel={Number of traces},
+    ylabel={Accumulated log-likelihood},
+    xlabel style={
+        font=\small
+    },
+    ylabel style={
+        font=\small
+    },
+    scaled x ticks=false,
+    scaled y ticks=false,
+    y post scale=0.9,
+    x post scale=1.7,
+    tick label style={
+        font=\small
+    },
+    label style={
+        font=\small
+    },
+    legend style={
+        font=\small,
+        at={(0.02,0.02)},
+        anchor=south west,
+        draw=none,
+        fill=none
+    },
+    legend cell align=left,
+    xmin=1,
+    xmax=1000,
+]
+
+\addplot[
+    mark=none,
+    color=black,
+]
+table[
+    x=x,
+    y=worst_wrong
+] {\datatable};
+\addlegendentry{Worst wrong candidate}
+
+\addplot[
+    mark=none,
+    color=gray,
+]
+table[
+    x=x,
+    y=mean_wrong
+] {\datatable};
+\addlegendentry{Mean of wrong candidates}
+
+\addplot[
+    mark=none,
+    color=red,
+]
+table[
+    x=x,
+    y=best_wrong
+] {\datatable};
+\addlegendentry{Best wrong candidate}
+
+\addplot[
+    mark=none,
+    color=blue,
+    thick,
+]
+table[
+    x=x,
+    y=true_weight
+] {\datatable};
+\addlegendentry{True weight}
+
+\end{axis}
+
+\end{tikzpicture}
+
+\end{document}

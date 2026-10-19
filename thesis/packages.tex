@@ -1,0 +1,96 @@
+\usepackage[final]{pdfpages}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[\FIITlanguage]{babel}
+\usepackage[a4paper]{geometry}
+\usepackage[
+	left = \glqq,% 
+	right = \grqq,% 
+	leftsub = \glq,% 
+	rightsub = \grq%
+]{dirtytalk}
+\usepackage[parfill]{parskip}
+\usepackage{enumitem}
+\usepackage{calc}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{amsmath,amsfonts}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{setspace}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage[backend=bibtex,sorting=none]{biblatex}
+\usepackage{listing}
+\usepackage{lscape}
+\usepackage{afterpage}
+\usepackage{hyperref}
+%\usepackage{bera}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{lipsum}
+\usepackage{minted}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tocloft}
+
+% Remove unnecessary gap between paragraph if large figure is inserted after them
+\raggedbottom
+
+% lscape.sty Produce landscape pages in a (mainly) portrait document.
+\usepackage{lscape}
+
+% Custom commands
+\newcommand{\signaturespace}[2]{
+	% #1 = width of the dotted line
+	% #2 = legend
+	\begingroup
+	\renewcommand{\arraystretch}{0}
+	\begin{tabular}[t]{cc}
+		\hspace*{0pt}
+		\cleaders\hbox{\kern.6pt.\kern.6pt}\hskip#1\relax
+		\hspace*{0pt}
+		\\[0.5cm]
+		#2
+	\end{tabular}
+	\endgroup
+}
+
+\newcommand{\emptypage}{\newpage
+	\thispagestyle{empty}
+	\mbox{}
+	\newpage}
+
+% openright does not work :(
+\let\tmp\oddsidemargin
+\let\oddsidemargin\evensidemargin
+\let\evensidemargin\tmp
+\reversemarginpar
+
+% IEEE conference look for the Scientific Part chapter (IIT.SRC format).
+% Usage: \begin{ieeepaper}{Title} ... \end{ieeepaper}
+% Inside: abstract, IEEEkeywords, Roman sections, thebibliography + \cite{key}.
+% Figures/tables are typeset in place (floats are not allowed in multicols).
+\makeatletter
+\newenvironment{ieeepaper}[1]{%
+	\singlespacing
+	\setlength{\columnsep}{1.5em}%
+	\renewenvironment{figure}[1][]{\par\medskip\noindent\begin{minipage}{\columnwidth}\def\@captype{figure}}{\end{minipage}\par\medskip}%
+	\renewenvironment{table}[1][]{\par\medskip\noindent\begin{minipage}{\columnwidth}\def\@captype{table}}{\end{minipage}\par\medskip}%
+	\renewcommand{\thesection}{\Roman{section}}%
+	\renewcommand{\thesubsection}{\Alph{subsection}}%
+	\shorthandoff{-}%
+	\newenvironment{abstract}{\noindent\small\textbf{\textit{Abstract}---}\bfseries}{\par\vspace{0.5em}}%
+	\newenvironment{IEEEkeywords}{\noindent\small\textbf{\textit{Index Terms}---}\bfseries\itshape}{\par}%
+	\renewcommand{\cite}[1]{[\ref{bib:##1}]}%
+	\renewcommand{\theenumiv}{\arabic{enumiv}}\renewcommand{\p@enumiv}{}%
+	\renewenvironment{thebibliography}[1]{\small\begin{list}{[\theenumiv]}{\usecounter{enumiv}%
+			\settowidth{\labelwidth}{[00]}\setlength{\leftmargin}{\labelwidth}\addtolength{\leftmargin}{\labelsep}}%
+		\renewcommand{\bibitem}[1]{\item\label{bib:####1}}}{\end{list}}%
+	{\centering\LARGE #1\par}\vspace{1em}%
+	\begin{multicols}{2}%
+}{%
+	\end{multicols}%
+}
+\makeatother

@@ -1,0 +1,79 @@
+\documentclass{standalone}
+
+\usepackage{xcolor}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+
+\pgfplotsset{
+    compat=1.18
+}
+
+\def\datafile{poi_correlation.txt}
+
+\pgfplotstableread[
+    col sep=tab
+]{\datafile}\datatable
+
+\begin{document}
+
+\begin{tikzpicture}
+
+\begin{axis}[
+    xlabel={Sample},
+    ylabel={Correlation with HW($v$)},
+    xlabel style={
+        font=\small
+    },
+    ylabel style={
+        font=\small
+    },
+    scaled x ticks=false,
+    scaled y ticks=false,
+    y post scale=0.9,
+    x post scale=1.7,
+    tick label style={
+        font=\small
+    },
+    label style={
+        font=\small
+    },
+    legend style={
+        font=\small,
+        at={(0.02,0.02)},
+        anchor=south west,
+        draw=none,
+        fill=none
+    },
+    legend cell align=left,
+    unbounded coords=discard,
+    xmin=0,
+    xmax=999,
+]
+
+\addplot[
+    mark=none,
+    color=blue,
+    forget plot,
+]
+table[
+    x=x,
+    y=correlation
+] {\datatable};
+
+\addplot[
+    only marks,
+    mark=*,
+    mark size=1.5pt,
+    color=red,
+]
+table[
+    x=x,
+    y=POI
+] {\datatable};
+\addlegendentry{Selected POIs}
+
+\end{axis}
+
+\end{tikzpicture}
+
+\end{document}

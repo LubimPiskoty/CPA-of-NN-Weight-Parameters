@@ -13,8 +13,8 @@ venv/
 data/raw/**/*.trs
 data/raw/**/*.npy
 data/raw/**/*.npz
-data/processed/**/*.npy
-data/processed/**/*.npz
+# data/processed/**/*.npy
+# data/processed/**/*.npz
 !data/raw/**/.gitkeep
 !data/processed/**/.gitkeep
 
@@ -54,10 +54,12 @@ compile_commands.json
 Makefile.platform
 */objdir-*
 
-data/raw/*
-*.eep
+*.ee
 *.lss
 *.sym
 firmware/objdir*
 */.jupyter
 .jupyter
+paper
+firmware
+thesis/_minted

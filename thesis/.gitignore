@@ -1,0 +1,23 @@
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*-blx.bib
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
+*.bak
+_minted*/
+build/
+
+# compiled output (rebuild with latexmk)
+*.pdf
+!assets/**/*.pdf

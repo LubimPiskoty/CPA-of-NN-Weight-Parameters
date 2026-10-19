@@ -1,0 +1,136 @@
+% Import default values & document settings
+\include{values}
+
+% Setup document
+\documentclass[\FIITdefaultFontSize,a4paper,twoside,openright,\FIITlanguage]{book}
+
+% Load all necessary packages
+\include{packages}
+
+% Setup bibliography
+\bibliography{bibliography}
+
+% Page design
+\pagestyle{fancy}
+\lhead{\nouppercase{\leftmark}}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+
+\begin{document}
+
+% Initialize document
+\include{initialize}
+
+% Cover & title page
+\include{pages/titlepage}
+
+% Thesis assignment
+\newpage
+\thispagestyle{empty}
+% TODO: replace assets/zadanie.pdf with your own signed assignment (AIS) - current file is the template sample
+\includepdf[pages=1,scale=0.85]{assets/zadanie}
+\newpage
+\emptypage
+
+% Declaration of honor
+\include{pages/declaration}
+
+% Acknowledgements
+\include{pages/acknowledgements}
+
+% Annotation
+\include{pages/annotation}
+
+% Technical abstract
+\include{pages/abstract}
+
+% Lay summary
+\include{pages/lay_summary}
+
+% Table of contents
+\ifx\FIITlagEN\undefined
+	\renewcommand{\contentsname}{Obsah}
+\else
+	\renewcommand{\contentsname}{Table of contents}
+\fi
+\tableofcontents{}
+\emptypage
+
+% List of figures
+\listoffigures
+\emptypage
+
+% List of tables
+%\listoftables
+%\emptypage
+
+% List of abbreviations
+\include{pages/abbreviations}
+
+% Enable page numbering
+\pagenumbering{arabic}
+
+% Begin refferences segment
+\begin{refsegment}
+
+	\include{content/01_introduction}
+	\emptypage
+
+	\include{content/02_problem_definition}
+	\emptypage
+
+	\include{content/03_related_work}
+	\emptypage
+
+	\include{content/04_solution_overview}
+	\emptypage
+
+	\include{content/05_risk_assessment}
+	\emptypage
+
+	\include{content/06_reproducibility}
+	\emptypage
+
+	\include{content/07_sustainability}
+	\emptypage
+
+	\include{content/08_employability}
+	\emptypage
+
+	\include{content/09_teamwork}
+	\emptypage
+
+	\include{content/10_scientific_part}
+	\emptypage
+
+	\include{content/11_evaluation}
+
+	\ifx\FIITlagEN\undefined
+	\else
+		\include{pages/resume}
+	\fi
+
+	% Bibliography
+	\printbibliography[heading=references,segment=\therefsegment]
+
+	% no page numbers for appendicies
+	\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}
+	\addtocontents{toc}{\cftpagenumbersoff{chapter}}
+
+	\emptypage
+
+\end{refsegment}
+
+% Appendix
+\appendix
+
+\include{content/appendix_technical_documentation}
+
+\include{pages/time_schedule}
+
+\include{pages/digital_medium}
+
+\end{document}

@@ -1,0 +1,48 @@
+% Contents of the digital medium
+\thispagestyle{empty}
+
+\ifx\FIITlagEN\undefined
+\chapter{Obsah digitálneho média}
+\else
+\chapter{Contents of the digital medium}
+\fi
+
+\pagenumbering{arabic}
+\renewcommand*{\thepage}{C-\arabic{page}}
+
+\ifx\FIITlagEN\undefined
+\par Evidenčné číslo práce v informačnom systéme: \FIITevidenceNumber
+\else
+\par Registration number of the thesis in the information system: \FIITevidenceNumber
+\fi
+
+\ifx\FIITlagEN\undefined
+\par Obsah digitálnej časti práce (archív ZIP):
+\else
+\par Contents of the digital medium (ZIP archive):
+\fi
+
+\begin{minted}[linenos=false]{text}
+Folder                  Contents
+/firmware               target firmware (network forward pass)
+/capture                trace capture script and configuration
+/data
+    /raw                captured ChipWhisperer projects
+    /processed          clipped traces used by the analysis
+/analysis               leakage analysis and attack notebooks
+/results                exported figures and tables
+/thesis                 LaTeX source of this thesis
+/praca-pdf
+    /praca.pdf          main part of the thesis
+    /prilohy.pdf        text appendices
+\end{minted}
+
+% only if digital medium contents exceed 1 GB
+% \par Digitálna časť práce má veľkosť 3.75 GB, kvôli čomu je uložená v systéme G Suite for Education.
+
+
+\ifx\FIITlagEN\undefined
+\par Názov odovzdaného archívu: \FIITArchiveName.
+\else
+\par Name of the submitted archive: \FIITArchiveName.
+\fi
