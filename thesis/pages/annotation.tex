@@ -6,19 +6,19 @@
 \section*{Anotácia}
 
 \begin{minipage}[t]{1\columnwidth}
-\FIITuniversitySK
+	\FIITuniversitySK
 
-\FIITfacultySK
+	\FIITfacultySK
 
-Študijný program: \FIITstudyProgramSK\\
+	Študijný program: \FIITstudyProgramSK\\
 
-Autor: \FIITauthor
+	Autor: \FIITauthor
 
-\FIITthesisSK: \FIITtitleSK
+	\FIITthesisSK: \FIITtitleSK
 
-Vedúci projektu: \FIITsupervisor
+	Vedúci projektu: \FIITsupervisor
 
-\FIITdateSK
+	\FIITdateSK
 \end{minipage}
 
 \bigskip{}
@@ -26,7 +26,9 @@ Vedúci projektu: \FIITsupervisor
 % Anotácia (SK): max. 1 strana A4 (hlavička + cca 150-200 slov).
 % Musí pokryť všetky časti práce: problém, analýza/súvisiace práce, návrh riešenia,
 % výsledky (overenie) a prínos.
-\textit{TODO: anotácia v slovenčine (150--200 slov).}
+Nasadzovanie neurónových sietí na vstavaných a okrajových zariadeniach zvyšuje význam hodnotenia ich odolnosti voči útokom postranným kanálom. Výpočet inferencie môže prezradiť citlivé interné parametre modelu, najmä váhy, ktoré predstavujú duševné vlastníctvo a ich znalosť uľahčuje ďalšie útoky. Praktické získanie váh z implementácií s pohyblivou rádovou čiarkou je pritom problematické, pretože únik závisí od numerickej reprezentácie a od spôsobu vykonania operácií.
+
+Práca analyzuje princípy korelačnej analýzy príkonu (CPA), existujúce útoky na váhy neurónových sietí a implementáciu sietí na mikrokontroléroch. Navrhuje a implementuje postup na získavanie váh typu float32 z meraní príkonu pri násobení váhy s aktiváciou. Útok je profilovaný: najprv sa naučí únik zo známych náhodných váh a potom hľadá neznáme fixné váhy cieľového zariadenia. Postup je overený experimentálne na platforme ChipWhisperer (CWLITEARM, STM32F3) s jednoduchou doprednou neurónovou sieťou. Hodnotí sa presnosť obnovy váh, efektívnosť (počet potrebných meraní, výpočtová náročnosť) a praktická použiteľnosť vrátane typických chýb, ako je určenie váhy až na mocninu dvoch. Prínosom práce je overený postup extrakcie floating-point váh a analýza jeho obmedzení.
 
 
 
@@ -42,26 +44,28 @@ Vedúci projektu: \FIITsupervisor
 \section*{Annotation}
 
 \begin{minipage}[t]{1\columnwidth}
-\FIITuniversity
+	\FIITuniversity
 
-\FIITfaculty
+	\FIITfaculty
 
-Degree Course: \FIITstudyProgram\\
+	Degree Course: \FIITstudyProgram\\
 
-Author: \FIITauthor
+	Author: \FIITauthor
 
-\FIITthesis: \FIITtitle
+	\FIITthesis: \FIITtitle
 
-Supervisor: \FIITsupervisor
+	Supervisor: \FIITsupervisor
 
-\FIITdate
+	\FIITdate
 \end{minipage}
 
 \bigskip{}
 
 % Annotation (EN): max. 1 A4 page (header + ~150-200 words). Same content as the Slovak
 % annotation: problem, related work, solution, results/verification, contribution.
-\textit{TODO: annotation in English (150--200 words).}
+The growing deployment of neural networks on embedded and edge devices makes it increasingly important to evaluate their resistance to side-channel attacks. Inference computation can leak sensitive internal model parameters, especially the weights. These are intellectual property, and knowing them makes further attacks easier. Recovering weights from floating-point implementations in practice is difficult, because the leakage depends on the numerical representation and on how the operations are executed.
+
+This thesis analyses the principles of correlation power analysis (CPA), existing attacks on neural network weights, and neural network implementations on microcontrollers. It designs and implements an approach for recovering float32 weights from power measurements of the weight--activation multiplication. The attack is profiled: it first learns the leakage from known random weights, then searches for the unknown fixed weights of the target device. The approach is validated experimentally on a ChipWhisperer platform (CWLITEARM, STM32F3) running a small feed-forward neural network. The evaluation covers recovery accuracy, efficiency (number of required traces, computational cost) and practical applicability, including typical failure modes such as recovering a weight only up to a power of two. The contribution is a validated approach for extracting floating-point weights and an analysis of its limitations.
 
 
 

@@ -4,4 +4,24 @@
 
 \section{Long-Term Maintenance}
 
+The whole work is kept in one version-controlled repository, so every result can be traced to the code and data that produced it.
+The pipeline has four separate stages (firmware, capture, preprocessing, attack), and each stage has a single entry point.
+A change in one stage, for example a different network or a new attack notebook, does not require changes in the others as long as the data format stays the same.
+
+Dependencies are pinned in \texttt{requirements.txt}, and the capture settings are collected in one configuration file.
+The clipped traces are stored in the repository as \texttt{.npz} files, so the attack can be rerun and extended without the hardware.
+The main risk to maintenance is the dependence on the ChipWhisperer software and firmware tree, which changes between releases.
+For this reason the tested version of the library is fixed, and the board and firmware platform are named explicitly.
+Further work, such as other platforms or quantized networks, can reuse the analysis part unchanged.
+
 \section{Environmental Impact}
+
+The experiments use a low-power microcontroller board and a laptop, with no large-scale computing.
+The most expensive step is the trace capture, which runs for a few hours per dataset.
+The template attack and the success-rate evaluation run on a single CPU.
+The energy used is therefore small, comparable to normal desktop use.
+
+Storing the processed traces instead of recapturing them avoids repeating the measurements.
+Only the clipped window is kept, which also reduces storage.
+No new hardware was built for the work, and the board can be reused for later projects.
+The wider impact is positive: finding such leakage helps designers protect embedded devices before they are deployed, and so extends their safe lifetime.

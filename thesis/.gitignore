@@ -12,6 +12,8 @@
 *.out
 *.run.xml
 *.synctex.gz
+*.synctex(busy)
+_FAD*
 *.toc
 *.xdv
 *.bak
@@ -22,3 +24,9 @@ build/
 *.pdf
 !main.pdf
 !assets/**/*.pdf
+
+# standalone journal article: keep its compiled PDF, it is included by chapter 10
+!journal/main.pdf
+
+# Downloaded papers (copyrighted, not for pushing)
+sources/

@@ -2,16 +2,32 @@
 \label{chap:related}
 % FIIT: literature review and comparison of existing approaches; 1--1.5 pages.
 
-\section{Power Analysis Attacks}
+\section{Side-Channel Analysis of Neural Networks}
 
-\subsection{Correlation Power Analysis}
+Physical side channels reveal the architecture, inputs and parameters of a
+neural network~\cite{horvath2024sok}. Batina et al.~\cite{batina2019csi}
+recovered both architecture and weights, but limited weight candidates to a
+precision of $10^{-2}$. Joud et al.~\cite{joud2022practical} and Nozaki and
+Kobara~\cite{nozaki2024power} raised the precision with iterative CEMA and
+IEEE-754-aware correlation attacks, yet Joud et al.\ still report small errors
+rather than exact values. Exact extraction exists under stronger assumptions,
+using subnormal timing~\cite{gongye2020floating} or injected
+faults~\cite{breier2021sniff}.
 
-\subsection{Template Attacks}
+\section{Template Attacks}
 
-\section{Side-Channel Attacks on Neural Networks}
-
-\section{Leakage Assessment}
-
-\section{Countermeasures}
-
-\section{Comparison of Existing Approaches}
+A template attack first characterizes the leakage of an identical device and
+then uses this model against the target~\cite{chari2002template}. Given a
+leakage class $c$, the leakage vector $\mathbf{t}$ at the points of interest is
+modeled as
+\begin{equation}
+	\mathbf{t} \mid c \sim
+	\mathcal{N}(\boldsymbol{\mu}_c,\boldsymbol{\Sigma}_c),
+\end{equation}
+and candidates are ranked by likelihood, using several samples and their noise
+correlation jointly. Later work replaces the Gaussian model with machine-learning
+models such as two-dimensional CNNs~\cite{tu2021template}. In our implementation, the
+covariance matrix is pooled across leakage classes. Wei et
+al.~\cite{wei2018iknow} used a ``power template'' to recover inputs, but it is
+a lookup from power features to pixels. To the best of our knowledge, Gaussian
+templates have not been applied to recovering \texttt{float32} weights.

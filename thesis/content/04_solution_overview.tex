@@ -1,27 +1,135 @@
 \chapter{Solution Overview}
 \label{chap:solution}
-% FIIT: technical justification of the chosen techniques; 2--3 pages.
 
-\section{Measurement Platform}
+\section{Target Platform}
+\label{sec:target-platform}
 
-\section{Target Neural Network Firmware}
+Power traces are measured on a ChipWhisperer-Lite board with an
+STM32F303 (Arm Cortex-M4) target, controlled over the SimpleSerial
+protocol. A hardware trigger raised by the firmware just before the
+forward pass delimits the neural-network inference. Each trace contains
+$24{,}400$ samples, but only its first $1{,}000$ samples, which contain
+the targeted multiplication, are used for the analysis. This speeds up
+profiling.
 
-\section{IEEE-754 Floating-Point Representation}
+The target runs a feed-forward neural network with four layers of
+$7$, $5$, $4$ and $3$ neurons (ReLU in the hidden layers, sigmoid at the
+output), zero biases, and all values stored as IEEE-754 single-precision
+numbers. The first multiplication of the inference is
+$v=\mathrm{float32}(w^\star x)$, where $x$ is the input chosen by the
+attacker and $w^\star$ is the secret first-layer weight. The firmware is
+compiled with the default \texttt{-mfloat-abi=soft}, so every
+multiplication runs as a software routine that processes the sign,
+exponent and fraction bits with integer instructions, even though the
+MCU has a hardware FPU.
 
 \section{Leakage Model}
+\label{sec:leakage-model}
 
-\section{Trace Capture}
+A single-precision number~\cite{IEEE754} consists of a sign bit, $8$ exponent bits and
+$23$ fraction bits. For a candidate weight $w$ and known input $x$ we
+model the leakage of the intermediate $v=\mathrm{float32}(wx)$ by the
+Hamming weight of its $m$ most significant bits $B_m(v)$:
+\begin{equation}
+	c_m(v)=\mathrm{HW}\left(B_m(v)\right).
+\end{equation}
+Three resolutions are used: coarse ($m=17$, $18$ classes), fine
+($m=23$, $24$ classes) and exact ($m=32$, $33$ classes). Fewer modeled
+bits tolerate small errors in the candidate weight, while more bits make
+the model more selective.
 
-\subsection{Profiling Phase}
+\section{Profiled Attack}
+\label{sec:attack}
 
-\subsection{Attack Phase}
+\paragraph{Profiling.}
+We capture $50{,}000$ traces with weights drawn uniformly from $[-2,2]$
+(refreshed every $100$ traces) and random inputs. Since $x$ and the
+targeted weight are known, $v$ and its class $c_m(v)$ are known for every
+trace. Five points of interest (POIs) are selected as the samples with
+the highest absolute Pearson correlation with $\mathrm{HW}(B_{32}(v))$,
+at least $20$ samples apart. For each class $c$ we estimate the mean
+$\boldsymbol{\mu}_c$ of the POI vectors $\mathbf{t}$ and a single
+pooled covariance matrix $\boldsymbol{\Sigma}$, which gives the Gaussian
+templates
+\begin{equation}
+	\mathbf{t}\mid c\sim\mathcal{N}\left(\boldsymbol{\mu}_c,\boldsymbol{\Sigma}\right).
+\end{equation}
+One template set is built for each of the three resolutions.
 
-\section{Weight Recovery}
+\paragraph{Attack.}
+On the target the weight is fixed and unknown, and only the input $x_i$
+is controlled ($5{,}000$ attack traces are available). For a candidate
+$\hat{w}$ the hypothetical class $c_i(\hat{w})$ of
+$\mathrm{float32}(\hat{w}x_i)$ selects the template, and the evidence is
+accumulated over the attack traces:
+\begin{equation}
+	L(\hat{w})=\sum_{i=1}^{N_{\mathrm{attack}}}\log p\left(\mathbf{t}_i\mid c_i(\hat{w})\right).
+	\label{eq:likelihood}
+\end{equation}
+The candidate with the highest $L(\hat{w})$ is the recovered weight.
 
-\subsection{Point-of-Interest Selection}
+\section{Hierarchical Weight Recovery}
+\label{sec:hierarchical-recovery}
 
-\subsection{Template Construction}
+Evaluating all $\approx 2^{32}$ \texttt{float32} values is impractical,
+so the search narrows the candidates in three stages
+(Table~\ref{tab:hierarchical-recovery}), each scored with
+Eq.~\eqref{eq:likelihood} and a finer leakage model.
 
-\subsection{Hierarchical Candidate Search}
+\begin{table}[htb]
+	\centering
+	\small
+	\caption{Stages of the hierarchical weight recovery.}
+	\label{tab:hierarchical-recovery}
+	\begin{tabular}{@{}lllll@{}}
+		\toprule
+		Stage  & Search range               & Step      & Candidates         & Bits (classes) \\
+		\midrule
+		Coarse & $[-2,2]$                   & $10^{-4}$ & $40{,}001$         & $17$ ($18$)    \\
+		Fine   & $\pm 10^{-4}$ per finalist & $10^{-6}$ & $201$ per finalist & $23$ ($24$)    \\
+		Exact  & $\pm 512$ ULPs             & 1 ULP     & $\approx 22{,}550$ & $32$ ($33$)    \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+The coarse stage keeps the six best peaks, at least $0.005$ apart, as
+finalists. The fine stage refines each of them and passes the best one
+on, and the exact stage selects the final \texttt{float32} value.
+Because $\pm\hat{w}\,2^j$ have the same fraction bits as $\hat{w}$,
+their products differ from the true one only in the sign and exponent
+bits, and the coarse and fine models cannot reliably separate them. The
+exact stage therefore also tries both signs and the scalings $2^j$,
+$j\in\{-10,\ldots,10\}$, within $[-2,2]$. The experimental results are
+given in Chapter~\ref{chap:scientific}.
 
 \section{Justification of the Chosen Approach}
+\label{sec:justification}
+
+\paragraph{Template attack.}
+Previous parameter-recovery attacks on neural networks are mostly
+non-profiled and based on CPA or CEMA~\cite{batina2019csi,
+	joud2022practical, nozaki2024power}: they correlate one hypothetical
+leakage value with each sample of the trace. Template attacks were so
+far applied to neural networks mainly for input
+recovery~\cite{wei2018iknow}. The targeted product can take up to $33$
+Hamming-weight classes, and its software implementation spreads the
+leakage over several samples of the trace. A template attack models
+these samples jointly together with their noise correlation and ranks
+candidates by their likelihood, which suits testing a large number of
+$32$-bit hypotheses. Profiling is realistic because the attacker can
+program an identical device with chosen weights
+(Section~\ref{sec:attack}).
+
+\paragraph{Hierarchical search.}
+The coarse model uses only the sign, exponent and upper fraction bits,
+so a candidate close to the true weight already predicts mostly the
+right class. The likelihood is therefore smooth enough to find promising
+regions on a coarse grid, and the later stages spend more candidates and
+a finer model only where needed. This avoids applying the most detailed
+model to the whole candidate space.
+
+\paragraph{Pooled covariance and few POIs.}
+Many of the $33$ classes are rare in the profiling data, so per-class
+covariance matrices would be estimated from very few traces. A shared
+covariance matrix and five POIs keep the number of estimated parameters
+small and the estimation stable with $50{,}000$ profiling traces.

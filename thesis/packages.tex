@@ -30,6 +30,8 @@
 \usepackage{xcolor}
 \usepackage{lipsum}
 \usepackage{minted}
+\usepackage{booktabs}
+\usepackage{adjustbox}
 \usepackage{tikz}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
@@ -57,10 +59,14 @@
 	\endgroup
 }
 
-\newcommand{\emptypage}{\newpage
-	\thispagestyle{empty}
-	\mbox{}
-	\newpage}
+\ifdefined\compactdraft
+	\newcommand{\emptypage}{}
+\else
+	\newcommand{\emptypage}{\newpage
+		\thispagestyle{empty}
+		\mbox{}
+		\newpage}
+\fi
 
 % openright does not work :(
 \let\tmp\oddsidemargin
@@ -68,29 +74,3 @@
 \let\evensidemargin\tmp
 \reversemarginpar
 
-% IEEE conference look for the Scientific Part chapter (IIT.SRC format).
-% Usage: \begin{ieeepaper}{Title} ... \end{ieeepaper}
-% Inside: abstract, IEEEkeywords, Roman sections, thebibliography + \cite{key}.
-% Figures/tables are typeset in place (floats are not allowed in multicols).
-\makeatletter
-\newenvironment{ieeepaper}[1]{%
-	\singlespacing
-	\setlength{\columnsep}{1.5em}%
-	\renewenvironment{figure}[1][]{\par\medskip\noindent\begin{minipage}{\columnwidth}\def\@captype{figure}}{\end{minipage}\par\medskip}%
-	\renewenvironment{table}[1][]{\par\medskip\noindent\begin{minipage}{\columnwidth}\def\@captype{table}}{\end{minipage}\par\medskip}%
-	\renewcommand{\thesection}{\Roman{section}}%
-	\renewcommand{\thesubsection}{\Alph{subsection}}%
-	\shorthandoff{-}%
-	\newenvironment{abstract}{\noindent\small\textbf{\textit{Abstract}---}\bfseries}{\par\vspace{0.5em}}%
-	\newenvironment{IEEEkeywords}{\noindent\small\textbf{\textit{Index Terms}---}\bfseries\itshape}{\par}%
-	\renewcommand{\cite}[1]{[\ref{bib:##1}]}%
-	\renewcommand{\theenumiv}{\arabic{enumiv}}\renewcommand{\p@enumiv}{}%
-	\renewenvironment{thebibliography}[1]{\small\begin{list}{[\theenumiv]}{\usecounter{enumiv}%
-			\settowidth{\labelwidth}{[00]}\setlength{\leftmargin}{\labelwidth}\addtolength{\leftmargin}{\labelsep}}%
-		\renewcommand{\bibitem}[1]{\item\label{bib:####1}}}{\end{list}}%
-	{\centering\LARGE #1\par}\vspace{1em}%
-	\begin{multicols}{2}%
-}{%
-	\end{multicols}%
-}
-\makeatother

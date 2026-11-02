@@ -10,12 +10,9 @@ venv/
 *.ipynb_checkpoints
 
 # --- ChipWhisperer / trace data (keep raw data out of git history) ---
-data/raw/**/*.trs
-data/raw/**/*.npy
-data/raw/**/*.npz
+data/raw/
 # data/processed/**/*.npy
 # data/processed/**/*.npz
-!data/raw/**/.gitkeep
 !data/processed/**/.gitkeep
 
 # --- Firmware build artifacts ---
@@ -39,6 +36,16 @@ thesis/build/
 *.fdb_latexmk
 *.lof
 *.lot
+*.bcf
+*.run.xml
+*-blx.bib
+*.xdv
+*.bak
+*.nav
+*.snm
+*.vrb
+_minted*/
+*.pyg
 
 # --- OS junk ---
 .DS_Store

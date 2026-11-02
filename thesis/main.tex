@@ -1,8 +1,15 @@
-% Import default values & document settings
+% Draft switch: uncomment the next line to drop empty pages and let chapters start on any page.
+% Comment it out again for the final (print) version.
+\def\compactdraft{}
+
 \include{values}
 
 % Setup document
-\documentclass[\FIITdefaultFontSize,a4paper,twoside,openright,\FIITlanguage]{book}
+\ifdefined\compactdraft
+	\documentclass[\FIITdefaultFontSize,a4paper,twoside,openany,\FIITlanguage]{book}
+\else
+	\documentclass[\FIITdefaultFontSize,a4paper,twoside,openright,\FIITlanguage]{book}
+\fi
 
 % Load all necessary packages
 \include{packages}

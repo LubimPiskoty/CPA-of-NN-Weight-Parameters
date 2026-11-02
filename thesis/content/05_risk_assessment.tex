@@ -2,6 +2,23 @@
 \label{chap:risks}
 % FIIT: SWOT analysis and mitigation strategies; ~1 page.
 
-\section{SWOT Analysis}
+\paragraph{Strengths.}
+Exact \texttt{float32} recovery ($100\,\%$ success from $263$ attack traces),
+inexpensive hardware, and public code and data.
 
-\section{Risk Mitigation}
+\paragraph{Weaknesses.}
+Only one weight is attacked, on one unprotected target using software
+floating-point, and profiling and attack share a board.
+
+\paragraph{Opportunities.}
+Extension to more weights and devices, and evaluation of countermeasures.
+
+\paragraph{Threats.}
+Dependence on one board and on changing ChipWhisperer software, and misuse
+against deployed models.
+
+\paragraph{Mitigation.}
+Results are claimed only for the evaluated setting, and template transfer to a
+second board is left as future work. Stored traces and pinned library versions keep the
+analysis runnable without the board (Chapter~\ref{chap:reproducibility}). The
+attack targets only our own test network, to help designers protect devices.
